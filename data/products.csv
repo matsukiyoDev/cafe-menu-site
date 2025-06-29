@@ -1,0 +1,9 @@
+category,name,desc,price,image
+coffee,ドリップコーヒー,hot/cold,400円,coffee1.svg
+coffee,アメリカンコーヒー,hot/cold,400円,coffee2.svg
+coffee,カフェラテ,hot/cold,500円,coffee3.svg
+coffee,エスプレッソ,,450円,coffee4.svg
+frappuccino,コーヒーフラペチーノ,,600円,frap1.svg
+frappuccino,抹茶フラペチーノ,,600円,frap2.svg
+frappuccino,マンゴーフラペチーノ,,600円,frap3.svg
+frappuccino,バナナーフラペチーノ,,600円,frap4.svg

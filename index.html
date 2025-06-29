@@ -1,39 +1,125 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>メニュー</title>
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-    body {
-      margin: 0;
-      padding: 0;
-      background-color: #ffffff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      font-family: sans-serif;
-    }
-    .container {
-      width: 100%;
-      max-width: 600px;
-      padding: 16px;
-    }
-    img, svg {
-      width: 100%;
-      height: auto;
-      display: block;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CAFE MatsuKiyo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./css/style.css" />
 </head>
 <body>
-  <div class="container">
-    <img src="menu.svg" alt="メニュー画像">
+  <h1>CAFE MatsuKiyo</h1>
+
+  <!-- フリーのカフェ画像をURL指定で読み込み -->
+<div class="hero-image">
+  <img src="https://images.pexels.com/photos/10755688/pexels-photo-10755688.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=1200" alt="ラテアートのクローズアップ">
+</div>
+
+  <div id="menuContainer"></div>
+
+  <div class="modal-bg" id="modalBg" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalDesc">
+    <div class="modal">
+      <h2 id="modalTitle">注文確認</h2>
+      <p id="modalDesc" class="description"></p>
+      <p id="modalPrice" class="price"></p>
+      <div class="btn-group">
+        <button class="btn confirm" id="confirmBtn">注文する</button>
+        <button class="btn cancel" id="cancelBtn">キャンセル</button>
+      </div>
+    </div>
   </div>
+
+  <script src="./js/modal.js"></script>
+  <script>
+    // CSV読み込み関数（ブラウザ標準fetchで簡易パース）
+    async function loadCSV(url) {
+      const res = await fetch(url);
+      const text = await res.text();
+      const lines = text.trim().split('\n');
+      const header = lines[0].split(',');
+      const data = lines.slice(1).map(line => {
+        const cols = line.split(',');
+        const obj = {};
+        header.forEach((h, i) => obj[h.trim()] = cols[i].trim());
+        return obj;
+      });
+      return data;
+    }
+
+    // SVG読み込み関数（外部SVGをinlineにする）
+    async function loadSVG(url) {
+      const res = await fetch(url);
+      return await res.text();
+    }
+
+    // 商品表示・モーダル制御
+    document.addEventListener('DOMContentLoaded', async () => {
+      const menuContainer = document.getElementById('menuContainer');
+      const products = await loadCSV('./data/products.csv');
+
+      // カテゴリ別に分ける
+      const categories = {};
+      products.forEach(p => {
+        if (!categories[p.category]) categories[p.category] = [];
+        categories[p.category].push(p);
+      });
+
+      const categoryLabels = {
+        coffee: 'Coffee',
+        frappuccino: 'Frappuccino',
+      };
+
+      async function createProductCard(product) {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.tabIndex = 0;
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-pressed', 'false');
+        card.dataset.name = product.name;
+        card.dataset.desc = product.desc;
+        card.dataset.price = product.price;
+
+        const imgWrapper = document.createElement('div');
+        imgWrapper.className = 'product-image';
+
+        const svgText = await loadSVG('./svg/' + product.image);
+        imgWrapper.innerHTML = svgText;
+
+        card.appendChild(imgWrapper);
+
+        const nameDiv = document.createElement('div');
+        nameDiv.className = 'product-name';
+        nameDiv.textContent = product.name;
+        card.appendChild(nameDiv);
+
+        const priceDiv = document.createElement('div');
+        priceDiv.className = 'product-price';
+        priceDiv.textContent = product.price;
+        card.appendChild(priceDiv);
+
+        return card;
+      }
+
+      for (const cat of Object.keys(categories)) {
+        const section = document.createElement('section');
+        section.className = 'menu-section';
+        section.setAttribute('aria-label', categoryLabels[cat] || cat);
+        const h2 = document.createElement('h2');
+        h2.textContent = categoryLabels[cat] || cat;
+        section.appendChild(h2);
+
+        const productGrid = document.createElement('div');
+        productGrid.className = 'products';
+
+        for (const product of categories[cat]) {
+          const card = await createProductCard(product);
+          productGrid.appendChild(card);
+        }
+
+        section.appendChild(productGrid);
+        menuContainer.appendChild(section);
+      }
+    });
+  </script>
 </body>
 </html>

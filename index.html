@@ -2,23 +2,38 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>メニュー</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
       margin: 0;
-      background-color: #fff;
+      padding: 0;
+      background-color: #ffffff;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      height: 100vh;
+      font-family: sans-serif;
+    }
+    .container {
+      width: 100%;
+      max-width: 600px; /* タブレット以上でも中央に寄せる */
+      padding: 16px;
     }
     img {
-      max-width: 100%;
+      width: 100%;
       height: auto;
+      display: block;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
   </style>
 </head>
 <body>
-  <img src="menu.png" alt="メニュー画像">
+  <div class="container">
+    <img src="menu.png" alt="メニュー画像">
+  </div>
 </body>
 </html>
